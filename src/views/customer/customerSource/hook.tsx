@@ -8,11 +8,9 @@ import { reactive, ref, computed, onMounted } from "vue";
 export function useRole() {
   // 客户资料表单 edit
   const form = reactive({
-    name: "", // 客户姓名 
-    code: "", // 客户编码
-    gender: "" , //性别
-    birthday:"", //生日
-    status: '', //状态
+    name: "",
+    code: "",
+    status: ""
   });
   const dataList = ref([]);
   const loading = ref(true);
@@ -37,36 +35,45 @@ export function useRole() {
       hide: ({ checkList }) => !checkList.includes("序号列")
     },
     {
-      label: "客户姓名",
-      prop: "id",
+      label: "客户姓名(无customerName字段)",
+      // prop: "customerName",
       minWidth: 100
     },
     {
-      label: "角色名称",
-      prop: "name",
-      minWidth: 120
-    },
-    {
-      label: "角色标识",
-      prop: "code",
-      minWidth: 150
-    },
-    {
-      label: "状态",
-      prop: "state",
-      minWidth: 150,
+      label: "性别(无gender字段)",
+      prop: "gender",
+      minWidth: 50,
       cellRenderer: ({ row, props }) => (
         <el-tag
           size={props.size}
-          type={row.state === 1 ? "danger" : ""}
+          type={row.gender === 1 ? "danger" : ""}
           effect="plain"
         >
-          {row.type === 1 ? "已流失" : "正常"}
+          {row.gender === 1 ? "男" : "女"}
         </el-tag>
       )
     },
     {
-      label: "分配",
+      label: "类型(无'类型'字段)",
+      prop: "name",
+      minWidth: 120
+    },
+    {
+      label: "状态(status)",
+      prop: "status",
+      minWidth: 80,
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.status1 === 1 ? "danger" : ""}
+          effect="plain"
+        >
+          {row.status1 === 1 ? "已流失" : "正常"}
+        </el-tag>
+      )
+    },
+    {
+      label: "分配状态(无分配状态字段，暂时借用 status 字段)",
       minWidth: 130,
       cellRenderer: scope => (
         <el-switch
@@ -83,14 +90,26 @@ export function useRole() {
       )
     },
     {
-      label: "录入时间",
+      label: "创建时间(createTime)",
       minWidth: 180,
       prop: "createTime",
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
-      label: "录入人",
+      label: "录入时间(updateTime)",
+      minWidth: 180,
+      prop: "updateTime",
+      formatter: ({ updateTime }) =>
+        dayjs(updateTime).format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      label: "操作人(creator)",
+      prop: "creator",
+      width: 100,
+    },
+    {
+      label: "操作",
       fixed: "right",
       width: 180,
       slot: "operation"
@@ -109,10 +128,8 @@ export function useRole() {
   function onChange({ row, index }) {
     ElMessageBox.confirm(
       `确认要<strong>${
-        row.status === 0 ? "停用" : "启用"
-      }</strong><strong style='color:var(--el-color-primary)'>${
-        row.name
-      }</strong>角色吗?`,
+        row.status === 0 ? "停止分配" : "分配"
+      }</strong><strong style='color:var(--el-color-primary)'></strong>角色吗?`,
       "系统提示",
       {
         confirmButtonText: "确定",
@@ -138,7 +155,7 @@ export function useRole() {
               loading: false
             }
           );
-          message("已成功修改角色状态", {
+          message("已成功修改分配状态", {
             type: "success"
           });
         }, 300);
@@ -149,11 +166,11 @@ export function useRole() {
   }
 
   function handleUpdate(row) {
-    console.log(row);
+    console.log(row,'更新');
   }
 
   function handleDelete(row) {
-    console.log(row);
+    console.log(row,'删除有问题，不确定好像也能删');
   }
 
   function handleSizeChange(val: number) {
@@ -171,6 +188,7 @@ export function useRole() {
   async function onSearch() {
     loading.value = true;
     const { data } = await getRoleList();
+    console.log(data)
     dataList.value = data.list;
     pagination.total = data.total;
     setTimeout(() => {

@@ -51,14 +51,7 @@ const {
           class="!w-[200px]"
         />
       </el-form-item>
-      <!-- <el-form-item label="角色标识：" prop="code">
-        <el-input
-          v-model="form.code"
-          placeholder="请输入角色标识"
-          clearable
-          class="!w-[180px]"
-        />
-      </el-form-item> -->
+      
       <el-form-item label="状态：" prop="status">
         <el-select
           v-model="form.status"
@@ -66,8 +59,8 @@ const {
           clearable
           class="!w-[180px]"
         >
-          <el-option label="未分配" value="1" />
-          <el-option label="已分配" value="0" />
+          <el-option label="已流失" value="1" />
+          <el-option label="正常" value="0" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -147,8 +140,6 @@ const {
                 @click="handleUpdate(row)"
               />
               <template #dropdown>
-                <el-dropdown-menu >
-                </el-dropdown-menu>
               </template>
             </el-dropdown>
           </template>
